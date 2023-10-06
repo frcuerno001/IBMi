@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nagios>
+	<func id="ReplyMsg">
+		<common-name>Reply Message Num</common-name>
+		<type>list</type>
+		<sql-command><![CDATA[SELECT MESSAGE_ID, SEVERITY, MESSAGE_TEXT from qsys2.message_queue_info where Message_type = 'INQUIRY' AND MESSAGE_KEY NOT IN (select ASSOCIATED_MESSAGE_KEY from qsys2.message_queue_info where message_type = 'REPLY')]]></sql-command>
+		<warning>1</warning>
+		<critical>3</critical>
+	</func>
+	<func id="WorkProblem">
+                <common-name>Message Problems</common-name>
+                <type>single-value</type>
+                <sql-command><![CDATA[SELECT COUNT(*) FROM QUSRSYS.QASXPROB WHERE WSXPST != 'C']]></sql-command>
+                <warning>1</warning>
+                <critical>2</critical>
+        </func>
+	<func id="CPU">
+                <common-name>CPU Utilization</common-name>
+                <type>single-value</type>
+                <sql-command><![CDATA[SELECT AVERAGE_CPU_UTILIZATION FROM TABLE(QSYS2.SYSTEM_ACTIVITY_INFO())]]></sql-command>
+                <warning>90</warning>
+                <critical>95</critical>
+        </func>
+        <func id="Cert">
+                <common-name>Expire Cert</common-name>
+                <type>list</type>
+                <sql-command><![CDATA[SELECT CERTIFICATE_LABEL AS Nombre,(DAYS(VALIDITY_END) - DAYS(CURRENT_DATE)) concat(' Días') as expira FROM COELIB.CERTIF]]></sql-command>
+                <warning>10</warning>
+                <critical>5</critical>
+        </func>
+</nagios>
+
+
+
+SELECT COUNT(*) FROM QSYS2.MESSAGE_QUEUE_INFO WHERE MESSAGE_TYPE = 'INQUIRY' AND MESSAGE_KEY NOT IN (SELECT ASSOCIATED_MESSAGE_KEY FROM QSYS2.MESSAGE_QUEUE_INFO where MESSAGE_TYPE = 'REPLY')]]
