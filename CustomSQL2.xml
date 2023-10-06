@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nagios>
+	<func id="CountMon">
+		<common-name>Total Jobs Num</common-name>
+		<type>single-value</type>
+		<sql-command><![CDATA[SELECT COUNT(*) AS USERS FROM TABLE(ACTIVE_JOB_INFO(SUBSYSTEM_LIST_FILTER => 'QUSRWRK'))x WHERE AUTHORIZATION_NAME = 'SMARTCTRL']]></sql-command>
+		<warning>3</warning>
+		<critical>4</critical>
+	</func>
+    	<func id="IASP2">
+           	<common-name>Highest IASP Usage</common-name>
+        	<type>list</type>
+	        <sql-command>SELECT ASP_NUMBER, PERCENT_USED FROM qsys2.sysdiskstat where asp_number = '2'</sql-command>
+          	<warning>80</warning>
+                <critical>90</critical>
+        </func>
+        <func id="WrkPrb">
+                <common-name>Message Problem</common-name>
+                <type>single-value</type>
+                <sql-command><![CDATA[SELECT COUNT(*) FROM QUSRSYS.QASXPROB WHERE WSXPST !='C']]></sql-command>
+                <warning>1</warning>
+                <critical>2</critical>
+        </func>
+	
+	<func id="ReplyMsg">
+		<common-name>Reply Message Num</common-name>
+		<type>list</type>
+		<sql-command><![CDATA[SELECT MESSAGE_ID, SEVERITY, MESSAGE_TEXT from qsys2.message_queue_info where Message_type = 'INQUIRY' AND MESSAGE_KEY NOT IN (select ASSOCIATED_MESSAGE_KEY from qsys2.message_queue_info where message_type = 'REPLY')]]>
+		</sql-command>
+		<warning>1</warning>
+		<critical>3</critical>
+	</func>
+
+	<func id="Cert">
+		<common-name>Expire Cert</common-name>
+		<type>list</type>
+		<sql-command><![CDATA[SELECT CERTIFICATE_LABEL AS Nombre,(DAYS(VALIDITY_END) - DAYS(CURRENT_DATE)) concat (' Dias') as expira FROM COELIB.CERTIF]]></sql-command>
+		<warning>10</warning>
+		<critical>5</critical>
+	</func>
+
+</nagios>
